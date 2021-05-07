@@ -7,6 +7,11 @@
 #include "../lib/minilibx_opengl/mlx.h"
 #include "ggl_mlx_define.h"
 
+# define TO_COORD(X, Y) ((int)floor(Y) * g_reso.width + (int)floor(X))
+
+
+
+#define tile_size 32
 
 
 typedef struct s_resolution

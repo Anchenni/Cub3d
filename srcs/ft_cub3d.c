@@ -1,8 +1,160 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
 #include "../includes/milx.h"
 #include "../includes/ft_parsing.h"
 #include "../utils/get_next_line/get_next_line.h"
 #include "../lib/libft/libft.h"
+
+#define X_EVENT_KEY_PRESS		2
+#define X_EVENT_KEY_EXIT		17 //Exit program key code
+
+#define KEY_ESC			53
+
+//Mac key code example
+//All the key code example other than below is described on the site linked in READEME.md
+
+# define KEY_Q			12
+# define KEY_W			13
+# define KEY_E			14
+# define KEY_R			15
+# define KEY_A			0
+# define KEY_S			1
+# define KEY_D			2
+#define PI 3.1415926535
+
+void    draw_dir_ray(t_mlx *mlx, float angle, int x,int y)
+{
+   
+    // float    ray_x;
+    // float    ray_y;
+    // double    dx;
+    // double    dy;
+
+    float    max_value;
+    
+    // ray_x = mlx->xp;
+    // ray_y = mlx->yp;
+    // printf("angle = %f\n", angle);
+    mlx->dxp = cos(angle) * tan(mlx->xp/mlx->ap) - sin(angle) * tan(mlx->yp/mlx->ap);
+    mlx->dyp = sin(angle) * tan(mlx->xp/mlx->ap) + cos(angle) * tan(mlx->yp/mlx->ap);
+    
+    max_value = fmax(fabs(mlx->dxp), fabs(mlx->dyp));
+    //  printf("\nmax_value = %f\n",max_value);
+    if (max_value != 0)
+    {
+        mlx->dxp /= max_value;
+        mlx->dyp /= max_value;
+    }
+    
+
+
+    while (1)
+    {
+        //  printf("1helo\n");
+        //  printf("ray_x = %f and ray_y = %f\n", mlx->xp, mlx->yp);
+        if (mlx->img.data[y * g_reso.width + x] != 0x0000FF){
+            // printf("hhhhh\n");
+            mlx->img.data[y * g_reso.width + x] =  0xFF0000;
+        }
+        // if (mlx->img.data[g_reso.width * (int)floor(ray_y) + (int)floor(ray_x)] != 0x0000FF)
+        //         mlx->img.data[g_reso.width * (int)floor(ray_y) + (int)floor(ray_x)] = 0xFF0000;
+        else
+            break;
+        
+
+        mlx->xp += mlx->dxp;
+        mlx->yp += mlx->dyp;
+        // printf("dx = %f and dy = %f\n", mlx->dxp, mlx->dyp);
+        //  printf("2helo\n");
+    }
+    
+}
+ 
+// void    draw_ray(t_mlx *mlx)
+// {
+     
+//     // double angle;
+ 
+//     // angle = 0;
+//     while (mlx->ap < PI/6)
+//     {
+         
+//         draw_dir_ray(mlx, mlx->ap);
+//         printf("2hey\n");
+//         draw_dir_ray(mlx, -mlx->ap);
+//         printf("3hey\n");
+//         mlx->ap += PI/72;
+//     }
+//     // mlx_put_image_to_window(mlx->mlx, game->win, game->map_img.img, 0, 0);
+// }
+ 
+// void    rotate_matrix(t_mlx *mlx, float angle)
+// {
+    
+//     float    tmp_x;
+ 
+//     tmp_x = cos(angle) * mlx->xp - sin(angle) * mlx->yp;
+//     mlx->yp = sin(angle) * mlx->xp + cos(angle) * mlx->yp;
+//     mlx->xp = tmp_x;
+// }
+
+// float degToRad(int a) 
+// {
+//     return a*M_PI/180.0;
+// }
+// int FixAng(int a){ if(a>359){ a-=360;} if(a<0){ a+=360;} return a;}
+
+int		deal_key(int key_code, t_mlx *mlx)
+{
+    // int a = 1;
+	// printf("")
+    if (key_code == KEY_A)
+    {
+        mlx->ap -= 0.1;
+        if (mlx->ap < 0)
+            mlx->ap += 2 * PI;
+        mlx->dxp = cos(mlx->ap) * 5;
+        mlx->dyp = sin(mlx->ap) * 5; 
+        // rotate_matrix(mlx, PI/36);
+    }
+    
+        // mlx->xp++;
+    else if (key_code == KEY_D)
+    {
+        mlx->ap += 0.1;
+        if (mlx->ap > 2 * PI)
+            mlx->ap -= 2 * PI;
+        mlx->dxp = cos(mlx->ap) * 5;
+        mlx->dyp = sin(mlx->ap) * 5; 
+        // rotate_matrix(mlx, -PI/36);
+    }
+        // mlx->xp--;
+    else if (key_code == KEY_W)
+    {
+        mlx->xp -= mlx->dxp;
+        mlx->yp -= mlx->dyp;
+    }
+        // mlx->yp++;
+    else if (key_code == KEY_S)
+    {
+        mlx->xp += mlx->dxp;
+        mlx->yp += mlx->dyp;
+    }
+        // mlx->yp--;
+    else if (key_code == KEY_ESC)
+		exit(0);
+    
+    
+    printf("\ndxp = %f and dyp = %f\n", mlx->dxp, mlx->dyp);
+    printf("xp: %f --", mlx->xp);
+    printf("yp: %f\n", mlx->yp);
+    printf("ap: %f\n", mlx->ap);
+	return (0);
+}
+
+
 int	find_leng_d(size_t d)
 {
 	ssize_t	number;
@@ -168,14 +320,9 @@ void    check_texture(char *line)
         }
         text[j] = '\0';
         g_texture.s = text;
-        // printf("\n!we=%s!\n", g_texture.so);
     }
 }
 
-// int     int_tab(char *line)
-// {
-
-// }
 
 char					*ft_strsub(char *str, int start, int len)
 {
@@ -264,20 +411,21 @@ void add_value_map(char *line, int fd)
     // }
     count_len_map();
 }
-void init_window(void)
-{
-    g_mlx.mlx_ptr = mlx_init();
-    g_mlx.win = mlx_new_window(g_mlx.mlx_ptr, g_reso.width, g_reso.height, "cub3d");
-}
+// void init_window(void)
+// {
+//     mlx.mlx_ptr = mlx_init();
+//     g_mlx.win = mlx_new_window(g_mlx.mlx_ptr, g_reso.width, g_reso.height, "cub3d");
+// }
 
-void	draw_rectangle(int x, int y)
+void	draw_rectangle(t_mlx *mlx, int x, int y)
 {
-    printf("\nb\n");
+    // printf("\nb\n");
 	int i;
 	int j;
-	int tile_size;
+	// float tile_size;
 
-	tile_size = 32;
+	// tile_size = 58;
+    // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
 	x *= tile_size;
 	y *= tile_size;
 	i = 0;
@@ -288,25 +436,30 @@ void	draw_rectangle(int x, int y)
 		j = 0;
 		while (j < tile_size)
 		{
-			// printf("test h\n");
-			// printf("y + i = %d\n", (y + i));
-			// printf("x + j = %d\n", (x + j));
-			// printf("===%d===\n", ((y + i) * g_dotcube.reso_w + (x + j)));
-			g_mlx.img.data[(y + i) * g_reso.width + (x + j)] = 0xFFFFFF;
-			// printf("test i\n");
+			
+			mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0x0000FF;
 			j++;
 		}
 		i++;
 	}
 }
-void    draw_position(int x, int y)
+// void			param_init(t_mlx *mlx)
+// {
+// 	mlx->xp = 0;
+// 	mlx->yp = 0;
+	
+// }
+
+
+void	draw_sprite(t_mlx *mlx, int x, int y)
 {
-//  printf("\nb\n");
+    // printf("\nb\n");
 	int i;
 	int j;
-	int tile_size;
+	// float tile_size;
 
-	tile_size = 32;
+	// tile_size = 58;
+    // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
 	x *= tile_size;
 	y *= tile_size;
 	i = 0;
@@ -317,26 +470,23 @@ void    draw_position(int x, int y)
 		j = 0;
 		while (j < tile_size)
 		{
-			// printf("test h\n");
-			// printf("y + i = %d\n", (y + i));
-			// printf("x + j = %d\n", (x + j));
-			// printf("===%d===\n", ((y + i) * g_dotcube.reso_w + (x + j)));
-			g_mlx.img.data[(y + i) * g_reso.width + (x + j)] = 0x0000FF;
-			// printf("test i\n");
+			
+			mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0xFF0000;
 			j++;
 		}
 		i++;
 	}
 }
 
-void    draw_sprite(int x, int y)
+void	draw_vide(t_mlx *mlx, int x, int y)
 {
-//  printf("\nb\n");
+    // printf("\nb\n");
 	int i;
 	int j;
-	int tile_size;
+	// float tile_size;
 
-	tile_size = 32;
+	// tile_size = 58;
+    // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
 	x *= tile_size;
 	y *= tile_size;
 	i = 0;
@@ -347,70 +497,250 @@ void    draw_sprite(int x, int y)
 		j = 0;
 		while (j < tile_size)
 		{
-			// printf("test h\n");
-			// printf("y + i = %d\n", (y + i));
-			// printf("x + j = %d\n", (x + j));
-			// printf("===%d===\n", ((y + i) * g_dotcube.reso_w + (x + j)));
-			g_mlx.img.data[(y + i) * g_reso.width + (x + j)] = 0xFF0000;
-			// printf("test i\n");
+			
+			mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0x000000;
 			j++;
 		}
 		i++;
 	}
 }
-void	draw_rectangles(void)
+void	draw_position(t_mlx *mlx, float x, float y)
 {
+    // printf("\nb\n");
+	int i;
+	int j;
+    // mlx->xp = x;
+    // mlx->yp = y;
    
+    // printf("\nx = %d and y = %d\n", x, y);
+	int tile_sizee;
+    // draw_rectangle(mlx, x, y);
+	tile_sizee = 8;
+   
+    // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
+	x *= tile_size - mlx->xp ;
+	y *= tile_size - mlx->yp ;
+	i = 0;
+	// printf("test f\n");
+    
+	while (i < tile_sizee)
+	{
+		// printf("test g\n");
+		j = 0;
+		while (j < tile_sizee)
+		{
+			mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0xFFD700;
+			j++;
+		}
+		i++;
+	}
+    
+    // printf("x: %d\n", mlx->xp);
+    // printf("\ni = %d and j = %d\n", i, j);
+}
+void        draw_cam(t_mlx *mlx, float x, float y)
+{
+    
+
+	int i = 0;
+	int j = 0;
+    // mlx->xp = x;
+    // mlx->yp = y;
+    
+    // printf("\nx = %d and y = %d\n", x, y);
+	int tile_sizee;
+    // draw_rectangle(mlx, x, y);
+	tile_sizee = 3;
+    
+    // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
+	x  *= tile_size - mlx->xp - mlx->dxp;
+    // x += mlx->dxp;
+	y *= tile_size - mlx->yp  - mlx->dyp;
+    while (1)
+    {
+        if (mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] != 0x0000FF)
+            {
+    // y += mlx->dyp;
+                    i = 0;
+    //                 x  *= tile_size - mlx->xp - mlx->dxp;
+    // // x += mlx->dxp;
+	//                 y *= tile_size - mlx->yp  - mlx->dyp;
+
+    //  probleme vient de la !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // if (mlx->ap < PI*2){
+                    //     x = x - mlx->dxp ;
+                    //     y = y - mlx->dyp ;
+                    // }
+                    // else if (mlx->ap > 0 ){
+                    //     x = x + mlx->dxp ;
+                    //     y = y + mlx->dyp ;
+                    // }
+                    // x++;
+                    // y++;
+                     
+                    // printf("test f\n");
+                    
+                    while (i < tile_sizee)
+                    {
+                        
+                        // printf("test g\n");
+                        j = 0;
+                        while (j < tile_sizee)
+                        {
+                            
+                            mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0xFF0000;
+                            j++;
+                        }
+                        i++;
+                    }
+            }
+            else
+                break;
+           x += mlx->dxp;
+		   y += mlx->dyp;
+    }
+    // // printf("x: %d\n", mlx->xp);
+    // printf("\ni = %d and j = %d\n", i, j);
+}
+void	draw_rectangles(t_mlx *mlx)
+{
+	int		i;
+	int		j;
+    float     a;
+    float     b;
+	i = 0;
+	while (i < g_rows)                                                   
+	{
+		j = 0;
+		while (j < g_cols)
+		{    
+			if (g_tab[i][j] == '1')
+				draw_rectangle(mlx,j, i);
+            else if (g_tab[i][j] == '0')
+                draw_vide(mlx,j,i);
+            else if (g_tab[i][j] == 'N')
+            {
+                draw_vide(mlx,j,i);
+                // draw_position(mlx,j,i);
+                 a = i;
+                 b = j;
+            }
+            else if (g_tab[i][j] == '2')
+                draw_sprite(mlx,j, i);  
+			j++;
+		}
+		i++;
+	}
+    draw_position(mlx,b,a);
+    // printf("dxp = %d and dyp = %d", mlx->dxp, mlx->dyp);
+    // printf(" ici b = %d and a = %d\n", b,a);
+    // while  (mlx->ap <  PI/ 6 )
+    // {
+    //     draw_dir_ray (mlx, mlx->ap, b,a);
+    //     draw_dir_ray (mlx, -mlx->ap, b, a);
+    //     mlx->ap +=  PI/ 72 ;
+    // }
+    draw_cam(mlx,b,a);
+    
+
+    
+}
+void			param_init(t_mlx *mlx)
+{
+	mlx->xp = 0;
+	mlx->yp = 0;
+    mlx->dxp = 0.198669;
+    mlx->dyp = 0.198669;
+    mlx->ap = 0.1;
+	// param->str[0] = 'a';
+	// param->str[1] = 'b';
+	// param->str[2] = '\0';
+
+}
+
+int 	close()
+{
+		exit(0);
+}
+
+void	window_init(t_mlx *mlx)
+{
+    param_init(mlx);
+	mlx->mlx_ptr = mlx_init();
+    mlx->win = mlx_new_window(mlx->mlx_ptr, g_reso.width, g_reso.height, "anwar");
+}
+void	img_init(t_mlx *mlx)
+{
+    mlx->img.img_ptr = mlx_new_image(mlx->mlx_ptr, g_reso.width, g_reso.height);
+	mlx->img.data = (int *)mlx_get_data_addr(mlx->img.img_ptr, &mlx->img.bpp, &mlx->img.size_l, &mlx->img.endian);
+ 
+}
+
+//Draw the line by DDA algorithm
+void	draw_line(t_mlx *mlx, double x1, double y1, double x2, double y2)
+{
+	double	deltaX;
+	double	deltaY;
+	double	step;
+
+	deltaX = x2 - x1;
+	deltaY = y2 - y1;
+	step = (fabs(deltaX) > fabs(deltaY)) ? fabs(deltaX) : fabs(deltaY);
+	deltaX /= step;
+	deltaY /= step;
+	while (fabs(x2 - x1) > 0.01 || fabs(y2 - y1) > 0.01)
+	{
+		mlx->img.data[TO_COORD(x1, y1)] = 0xb3b3b3;
+		x1 += deltaX;
+		y1 += deltaY;
+	}
+}
+
+void 	draw_lines(t_mlx *mlx)
+{
 	int		i;
 	int		j;
 
 	i = 0;
-	while (i < g_rows)                                                   
+	while (i < g_cols)
 	{
-        
-		j = 0;
-		while (j < g_cols)
-		{
-             
-			if (g_tab[i][j] == '1'){
-                 printf("\na\n");
-				draw_rectangle(j, i);
-            }
-            // find position player if (ft_strchr("ENSW",g_tab[i][j])){
-            //     draw_position()
-            // }
-            else if (g_tab[i][j] == '2')
-                draw_sprite(j, i);
-            else if (ft_strchr("NWES",g_tab[i][j]))
-                draw_position(j, i);
-			j++;
-		}
+		draw_line(mlx, i * tile_size, 0, i * tile_size, g_reso.height);
 		i++;
 	}
+	draw_line(mlx, g_cols * tile_size - 1, 0, g_cols * tile_size - 1, g_reso.height);
+	j = 0;
+	while (j < g_rows)
+	{
+		draw_line(mlx, 0, j * tile_size, g_reso.width, j * tile_size);
+		j++;
+	}
+	draw_line(mlx, 0, g_rows * tile_size - 1, g_reso.width, g_rows * tile_size - 1);
 }
 
+int		main_loop(t_mlx *mlx)
+{
 
+	draw_rectangles(mlx);
+    // 
+	draw_lines(mlx);
+    
+    // printf("hey\n");
+    // draw_ray(mlx);
+	//  printf("hey je suis passe pa r la\n");
+    
+    mlx_put_image_to_window(mlx->mlx_ptr, mlx->win, mlx->img.img_ptr, 0, 0);
+	return (0);
+}
 
 int     main(int ac, char **av)
 {
     int fd;
     int ret;
     char *line;
-    // char tab[100][100];
     int i;
-    int x;
-	int y;
-	int rows;
-	int cols;
-	int tile_size;
-
+    t_mlx mlx;
     
-	tile_size = 32;
-	
-    // int j;
-    // int old_len; 
-    // int new_len;
-    // tab = NULL;
+
     i = 0;
     ret = 0;
 	line = NULL;
@@ -436,81 +766,19 @@ int     main(int ac, char **av)
         {
             check_texture(line);
         }
-        
-       
-        // else if (ft_strchr("012NWSE",line[0]) || ft_strchr("\t\v\r\f ", line[0]))
         else if (ft_strchr(line, '1'))
         {
-        //      old_len = ft_strlen(line);
-	    //     new_len = old_len - count_char(line, ' ');
-	    //    tab = malloc(sizeof(char) * (new_len + 1));
-                        
-            // while(ft_strchr("\t\v\r\f ",line[i]))
-            //     i++;
             add_value_map(line,fd);
-            
         }
-
-            // printf("\ni = %d\n", i);
-        //     while(line[i] != '\0')
-        //     {
-        //         j = 0;
-        //         while(line[j] != '\0')
-        //         {
-        //             tab[i][j] = line[j];
-        //             printf("%c", tab[i][j]);
-        //             j++;
-        //         }
-        //         printf("\n");
-        //         tab[i][j] = '\0';
-        //         i++;
-        //         break;
-        //     }   
-        //     tab[i][j] = '\0';
-        // }
-        // printf("\n tab = %s\n", tab);
-        
-		// free(line);
 	}
-    // init_window();
-    // g_mlx.win = mlx_new_window(g_mlx.mlx_ptr, g_reso.width, g_reso.height, "cub3d");
-    // g_mlx.img.img_ptr = mlx_new_image(g_mlx.mlx_ptr, g_reso.width, g_reso.height);
-    // g_mlx.img.data = (int *)mlx_get_data_addr(g_mlx.img.img_ptr, &g_mlx.img.bpp, &g_mlx.img.size_l, &g_mlx.img.endian);
-    // printf("\na\n");
-    g_mlx.mlx_ptr = mlx_init();
-    g_mlx.win = mlx_new_window(g_mlx.mlx_ptr, g_reso.width, g_reso.height, "anwar");
-    g_mlx.img.img_ptr = mlx_new_image(g_mlx.mlx_ptr, g_reso.width, g_reso.height);
-	g_mlx.img.data = (int *)mlx_get_data_addr(g_mlx.img.img_ptr, &g_mlx.img.bpp, &g_mlx.img.size_l, &g_mlx.img.endian);
-    // printf("\nb\n");
-    rows = g_reso.height / tile_size;
-    // printf("\nreso h = %d and reso de w = %d\n", g_reso.height, g_reso.width);
-	cols = g_reso.width / tile_size;
-    x = 0;
-    while (x < rows)
-	{
-        
-		// printf("test b\n");
-		y = 0;
-		while (y < cols)
-		{
-			// printf("test c\n");
-			// printf("g_cols = %d\n", g_cols);
-			// printf("i = %d et j %d\n", i, j);
-			// printf("g_tab de j = %c\n", g_tab[i][j]);
-			if (g_tab[x][y] == '1')
-			{
-                
-				// printf("test d\n");
-				// printf("g_tab de j = %c\n", g_tab[i][j]);
-				draw_rectangles();
-				// printf("test e\n");
-			}
-			y++;
-		}
-		x++;
-	}
-
-    mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win, g_mlx.img.img_ptr, 0, 0);
-    mlx_loop(g_mlx.mlx_ptr);
+    param_init(&mlx);
+    window_init(&mlx);
+    img_init(&mlx);
+        // printf("\ntile_size = %d\n",((g_reso.height + g_reso.width) / (g_rows + g_cols)));
+    
+	// mlx_hook(mlx.win, X_EVENT_KEY_EXIT, 0, &close, &mlx);
+    mlx_hook(mlx.win, X_EVENT_KEY_PRESS, 0, &deal_key, &mlx);
+    mlx_loop_hook(mlx.mlx_ptr, &main_loop, &mlx);
+    mlx_loop(mlx.mlx_ptr);
     return (0);
 }
