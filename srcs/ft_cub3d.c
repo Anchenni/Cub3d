@@ -115,8 +115,8 @@ int		deal_key(int key_code, t_mlx *mlx)
         mlx->ap -= 0.1;
         if (mlx->ap < 0)
             mlx->ap += 2 * PI;
-        mlx->dxp = cos(mlx->ap) * 5;
-        mlx->dyp = sin(mlx->ap) * 5; 
+        mlx->dxp = cos(mlx->ap)  ;
+        mlx->dyp = sin(mlx->ap)  ; 
         // rotate_matrix(mlx, PI/36);
     }
     
@@ -126,8 +126,8 @@ int		deal_key(int key_code, t_mlx *mlx)
         mlx->ap += 0.1;
         if (mlx->ap > 2 * PI)
             mlx->ap -= 2 * PI;
-        mlx->dxp = cos(mlx->ap) * 5;
-        mlx->dyp = sin(mlx->ap) * 5; 
+       mlx->dxp = cos(mlx->ap) ;
+        mlx->dyp = sin(mlx->ap);  
         // rotate_matrix(mlx, -PI/36);
     }
         // mlx->xp--;
@@ -519,7 +519,7 @@ void	draw_position(t_mlx *mlx, float x, float y)
    
     // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
 	x *= tile_size - mlx->xp ;
-	y *= tile_size - mlx->yp ;
+	y *= tile_size - mlx->yp  ;
 	i = 0;
 	// printf("test f\n");
     
@@ -553,41 +553,31 @@ void        draw_cam(t_mlx *mlx, float x, float y)
 	tile_sizee = 3;
     
     // tile_size = ((g_reso.height + g_reso.width) / (g_rows + g_cols));
-	x  *= tile_size - mlx->xp - mlx->dxp;
+	x  *= tile_size - mlx->xp ;
     // x += mlx->dxp;
-	y *= tile_size - mlx->yp  - mlx->dyp;
+	y *= tile_size - mlx->yp  ;
+    
+   
+    // mlx->dxp = cos(mlx->ap) * (mlx->xp+mlx->yp) - sin(mlx->ap) * (mlx->xp+mlx->yp) ;
+    // mlx->dyp = sin(mlx->ap) * (mlx->xp+mlx->yp)  + cos(mlx->ap) * (mlx->xp+mlx->yp);
+    // while (mlx->ap  < PI/6)
+    // {
     while (1)
     {
+        x += mlx->dxp * 5;
+		y += mlx->dyp * 5;
+        i = 0;
         if (mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] != 0x0000FF)
             {
-    // y += mlx->dyp;
-                    i = 0;
-    //                 x  *= tile_size - mlx->xp - mlx->dxp;
-    // // x += mlx->dxp;
-	//                 y *= tile_size - mlx->yp  - mlx->dyp;
-
-    //  probleme vient de la !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    // if (mlx->ap < PI*2){
-                    //     x = x - mlx->dxp ;
-                    //     y = y - mlx->dyp ;
-                    // }
-                    // else if (mlx->ap > 0 ){
-                    //     x = x + mlx->dxp ;
-                    //     y = y + mlx->dyp ;
-                    // }
-                    // x++;
-                    // y++;
-                     
-                    // printf("test f\n");
                     
+                   
                     while (i < tile_sizee)
                     {
-                        
-                        // printf("test g\n");
+                        //  x += mlx->xp - mlx->dxp ;
+	                	// y += mlx->yp - mlx->dyp ;
                         j = 0;
-                        while (j < tile_sizee)
-                        {
-                            
+                        while (j < tile_sizee )
+                        { 
                             mlx->img.data[(int)(y + i) * g_reso.width + (int)(x + j)] = 0xFF0000;
                             j++;
                         }
@@ -596,9 +586,11 @@ void        draw_cam(t_mlx *mlx, float x, float y)
             }
             else
                 break;
-           x += mlx->dxp;
-		   y += mlx->dyp;
+            // mlx->ap += PI/6;
     }
+    
+    // }
+    // mlx->ap = PI/72;
     // // printf("x: %d\n", mlx->xp);
     // printf("\ni = %d and j = %d\n", i, j);
 }
